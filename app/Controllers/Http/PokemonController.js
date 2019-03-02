@@ -3,16 +3,148 @@
 const Pokemon = use('App/Models/Pokemon');
 
 class PokemonController {
-    async index ({response}) {
-        try {
-            let pokemons = await Pokemon.all()
-            return response.json(pokemons)
-        } catch (err) {
-            return {
-                status: "Something went wrong",
-                message: err.message
+    async index ({request, response}) {
+        let { name_like, category, type_in } = request._qs;
+
+        if (name_like) {
+            if (category) {
+                if (type_in) {
+                    try {
+                        let pokemons = await Pokemon.query()
+                          .with("types")
+                          .with("categories")
+                          .where("name", "LIKE", "%" + name_like + "%")
+                          .where("category_id", category)
+                          .where("type_id", type_in)
+                          .orderBy("id", "desc")
+                          .limit(10).fetch();
+                        return response.json(pokemons)
+                      } catch (err) {
+                        return {
+                            status: "Something went wrong",
+                            message: err.message
+                        }
+                      }
+                } else {
+                    try {
+                        let pokemons = await Pokemon.query()
+                          .with("types")
+                          .with("categories")
+                          .where("name", "LIKE", "%" + name_like + "%")
+                          .where("category_id", category)
+                          .orderBy("id", "desc")
+                          .limit(10).fetch();
+                        return response.json(pokemons)
+                      } catch (err) {
+                        return {
+                            status: "Something went wrong",
+                            message: err.message
+                        }
+                      }
+                }
+            } else {
+                try {
+                    let pokemons = await Pokemon.query()
+                      .with("types")
+                      .with("categories")
+                      .where("name", "LIKE", "%" + name_like + "%")
+                      .orderBy("id", "desc")
+                      .limit(10).fetch();
+                    return response.json(pokemons)
+                  } catch (err) {
+                    return {
+                        status: "Something went wrong",
+                        message: err.message
+                    }
+                  }
+            }
+            
+        } 
+        
+        else if (category) {
+            if (type_in) {
+                try {
+                    let pokemons = await Pokemon.query()
+                      .with("types")
+                      .with("categories")
+                      .where("category_id", category)
+                      .where("type_id", type_in)
+                      .orderBy("id", "desc")
+                      .limit(10).fetch();
+                    return response.json(pokemons)
+                  } catch (err) {
+                    return {
+                        status: "Something went wrong",
+                        message: err.message
+                    }
+                  }
+            } else {
+                try {
+                    let pokemons = await Pokemon.query()
+                      .with("types")
+                      .with("categories")
+                      .where("category_id", category)
+                      .orderBy("id", "desc")
+                      .limit(10).fetch();
+                    return response.json(pokemons)
+                  } catch (err) {
+                    return {
+                        status: "Something went wrong",
+                        message: err.message
+                    }
+                  }
             }
         }
+
+        else if (type_in) {
+            if (name_like) {
+                try {
+                    let pokemons = await Pokemon.query()
+                      .with("types")
+                      .with("categories")
+                      .where("name", "LIKE", "%" + name_like + "%")
+                      .where("type_id", type_in)
+                      .orderBy("id", "desc")
+                      .limit(10).fetch();
+                    return response.json(pokemons)
+                  } catch (err) {
+                    return {
+                        status: "Something went wrong",
+                        message: err.message
+                    }
+                  }
+            } else {
+                try {
+                    let pokemons = await Pokemon.query()
+                      .with("types")
+                      .with("categories")
+                      .where("type_id", type_in)
+                      .orderBy("id", "desc")
+                      .limit(10).fetch();
+                    return response.json(pokemons)
+                  } catch (err) {
+                    return {
+                        status: "Something went wrong",
+                        message: err.message
+                    }
+                  }
+            }
+        }
+
+        else {
+            try {
+                let pokemons = await Pokemon.query()
+                .with("types")
+                .with("categories").fetch()
+                return response.json(pokemons)
+            } catch (err) {
+                return {
+                    status: "Something went wrong",
+                    message: err.message
+                }
+            }
+        }
+        
     }
 
     async show ({params, response}) {

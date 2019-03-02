@@ -20,42 +20,39 @@ class AuthController {
         }
       }
     
-    async register({ auth, request, response }) {
-        const { email, username, password } =  request.post()
-        try {
-            let user = new User()
-            let profile = new Profile()
-            
-            user.email = email
-            user.username = username
-            user.password = password
-            
-            await user.save()
-            profile.user_id = user.id
+      async register({ auth, request, response }) {
+		const { email, username, password } =  request.post()
+			try {
+				let user = new User()
+				
+				user.email = email
+				user.username = username
+				user.password = password
+				
+				await user.save()
+				
+				let accessToken = await auth.withRefreshToken().generate(user);
+				return {
+					user,
+					access_token: accessToken
+				}
+			} catch(e) {
+				switch(e.code) {
+					case 'ER_DUP_ENTRY':
+						return response.status(500).send({
+							status: 'failed',
+							message: 'Username or Email already taken!'
+						})
+					break
+					default:
+						return response.status(400).send({
+							status: 'failed',
+							message: e.code
+						})
+					break
+				}
 
-            await profile.save()
-            let accessToken = await auth.withRefreshToken().generate(user);
-            return {
-                user,
-                access_token: accessToken
-            }
-        } catch(e) {
-            switch(e.code) {
-                case 'ER_DUP_ENTRY':
-                    return response.status(500).send({
-                        status: 'failed',
-                        message: 'Username or Email already taken!'
-                    })
-                break
-                default:
-                    return response.status(400).send({
-                        status: 'failed',
-                        message: e.code
-                    })
-                break
-            }
-
-        }
+			}
     }
     
     async refreshToken({ request, auth }) {
