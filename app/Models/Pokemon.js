@@ -16,8 +16,8 @@ class Pokemon extends Model {
     categories() {
         return this.belongsTo("App/Models/Category");
     }
-    users () {
-        return this.belongsTo('App/Models/User')
+    profiles () {
+        return this.belongsTo('App/Models/Profile')
     }
 }
 

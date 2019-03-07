@@ -34,9 +34,8 @@ class User extends Model {
   tokens () {
     return this.hasMany('App/Models/Token')
   }
-  
-  pokemons () {
-    return this.hasMany('App/Models/Pokemon')
+  profiles() {
+    return this.hasOne("App/Models/Profile");
   }
 }
 
